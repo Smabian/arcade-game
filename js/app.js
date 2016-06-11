@@ -59,7 +59,7 @@ Enemy.prototype.render = function() {
 Enemy.prototype.reset = function(x,y) {
      this.x = x;
      this.y = y;
-     this.speed = (Math.random() * 300) + 200;
+     this.speed = (Math.random() * 300) + 300;
 };
 
 //Player Class
@@ -67,9 +67,13 @@ var Player = function(){
 
     var x,
         y,
-        sprite;
+        sprite,
+        score,
+        lives;
 
     this.reset();
+    this.score = 0;
+    this.lives = 2;
     this.sprite = 'images/char-boy.png';
 };
 
@@ -90,8 +94,8 @@ Player.prototype.handleInput = function (direction) {
         this.y -= 83;
     } else if (direction === 'down' && this.y < 474) {
         this.y += 83;
-    } else if (this.y < 80){
-        //this.reset();
+    } else if (this.y < 80 && this.y > 0 && this.x > 700 && this.x < 800 && star.starSelected === true){
+        this.y -= 83;
     }
     console.log(this.x,this.y);
 };
@@ -117,8 +121,11 @@ Player.prototype.checkCollisions = function(){
     if(this.x < selector.x + 70 && this.x + 55 > selector.x &&
         this.y < selector.y + 30 && this.y + 50 > selector.y){
 
-        console.log("Selector Pushed");
-        star.reset();
+        console.log("Selector Pushed " + star.starSelected);
+        if (star.starSelected === true){
+        } else {
+            star.reset();
+        }
     }
 
     //Check collissions with Star
@@ -127,9 +134,35 @@ Player.prototype.checkCollisions = function(){
         console.log("Star selected");
         star.starSelected = true;
         star.x = 0;
-        star.y = 152;
+        star.y = 70;
+        key.reset();
+    }
+
+    //Check collisions with Gems
+    for(var i = 0; i<allGems.length; i++){
+        if(this.x < allGems[i].x + 60 && this.x + 55 > allGems[i].x &&
+            this.y < allGems[i].y + 30 && this.y + 80 > allGems[i].y){
+
+            this.score += allGems[i].score;
+            console.log("Gemscore: " + allGems[i].score);
+            console.log("Total Score: " + this.score);
+            allGems.splice(i,1);
+        }
+    }
+    console.log(heart.x + " - " + heart.y);
+    //Check collisions with Heart
+    if(this.x < heart.x + 60 && this.x + 55 > heart.x &&
+            this.y < heart.y + 15 && this.y + 80 > heart.y){
+
+            this.lives++;
+            console.log("Total Lives: " + this.lives);
+            delete heart.x;
+            delete heart.y;
     }
 };
+
+//Collectibles Class
+
 
 //Selector Class
 var Select = function(){
@@ -155,13 +188,75 @@ Star.prototype.render = function(){
 Star.prototype.reset = function(){
     this.x = 606;
     this.y = 485;
-}
+};
+
+//Gem Class
+var Gem = function(color){
+    var score;
+    //Creating the right gem
+    if (color === 'orange'){
+        this.sprite = 'images/GemOrange.png';
+        this.score = 50;
+    } else if (color === 'green') {
+        this.sprite = 'images/GemGreen.png';
+        this.score = 100;
+    } else {
+        this.sprite = 'images/GemBlue.png';
+        this.score = 200;
+    }
+    //setting the location
+    this.reset();
+};
+
+Gem.prototype.render = function(){
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+Gem.prototype.reset = function(){
+    var col = Math.round(Math.random() * 8);
+    var row = Math.round(Math.random() * 3 + 2);
+    this.x = col * 101 + 20;
+    this.y = row * 83 + 25;
+};
+
+//Key Class
+var Key = function(){
+    this.sprite = 'images/Key.png';
+};
+
+Key.prototype.render = function(){
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+Key.prototype.reset = function(){
+    this.x = 707;
+    this.y = -20;
+};
+
+//Heart Class
+var Heart = function(){
+    this.sprite = 'images/Heart.png';
+    this.reset();
+};
+
+Heart.prototype.render = function(){
+    ctx.drawImage(Resources.get(this.sprite), this.x, this.y);
+};
+
+Heart.prototype.reset = function(){
+    var col = Math.round(Math.random() * 8);
+    var row = Math.round(Math.random() * 3 + 2);
+    this.x = col * 101 + 20;
+    this.y = row * 83 + 40;
+};
 
 // Place all enemy objects in an array called allEnemies
 // Place the player object in a variable called player
 var player = new Player();
 var selector = new Select();
 var star = new Star();
+var key = new Key();
+var heart = new Heart();
 
 var allEnemies = [];
 allEnemies[0] = new Enemy(0,226);
@@ -170,8 +265,16 @@ allEnemies[2] = new Enemy(300,392);
 allEnemies[3] = new Enemy(450,226);
 allEnemies[4] = new Enemy(600,309);
 allEnemies[5] = new Enemy(750,392);
+allEnemies[6] = new Enemy(750,143);
+allEnemies[7] = new Enemy(150,143);
+allEnemies[8] = new Enemy(600,226);
+allEnemies[9] = new Enemy(0,309);
 
-
+var allGems = [];
+allGems[0] = new Gem('green');
+allGems[1] = new Gem('green');
+allGems[2] = new Gem('orange');
+allGems[3] = new Gem('blue');
 
 // This listens for key presses and sends the keys to your
 // Player.handleInput() method. You don't need to modify this.

@@ -113,7 +113,8 @@ var Engine = (function(global) {
                 'images/grass-block.png',
                 'images/grass-block.png',
                 'images/grass-block.png',
-                'images/stone-block.png'
+                'images/stone-block.png',
+
             ],
             numRows = 7,
             numCols = 9,
@@ -151,11 +152,19 @@ var Engine = (function(global) {
         /* Loop through all of the objects within the allEnemies array and call
          * the render function you have defined.
          */
+        allGems.forEach(function(gem){
+            gem.render();
+        });
+
+        heart.render();
+
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
+
         selector.render();
         star.render();
+        key.render();
         player.render();
     }
 
@@ -178,7 +187,12 @@ var Engine = (function(global) {
         'images/enemy-bug.png',
         'images/char-boy.png',
         'images/selector.png',
-        'images/Star.png'
+        'images/Star.png',
+        'images/GemBlue.png',
+        'images/GemGreen.png',
+        'images/GemOrange.png',
+        'images/Key.png',
+        'images/Heart.png'
     ]);
     Resources.onReady(init);
 
