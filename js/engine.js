@@ -25,8 +25,8 @@ var Engine = (function(global) {
         ctx = canvas.getContext('2d'),
         lastTime;
 
-    canvas.width = 909;
-    canvas.height = 670;
+    canvas.width = 707;
+    canvas.height = 587;
     doc.body.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
@@ -112,12 +112,12 @@ var Engine = (function(global) {
                 'images/grass-block.png',
                 'images/grass-block.png',
                 'images/grass-block.png',
-                'images/grass-block.png',
+                //'images/grass-block.png',
                 'images/stone-block.png',
 
             ],
-            numRows = 7,
-            numCols = 9,
+            numRows = 6,
+            numCols = 7,
             row, col;
 
         /* Loop through the number of rows and columns we've defined above
@@ -133,13 +133,21 @@ var Engine = (function(global) {
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.
                  */
-                 if (row === 0 && col === 7 && star.starSelected === true){
+                 if (row === 0 && col === 5 && star.starSelected === true){
                     ctx.drawImage(Resources.get('images/stone-block.png'), col * 101, row * 83);
                  } else {
                     ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
                  }
             }
         }
+
+        //draw Scoreboard
+        ctx.rect(0,0,202,40);
+        ctx.rect(505,0,202,40);
+        ctx.fillStyle = '#eee';
+        ctx.strokeStyle = '#333';
+        ctx.fill();
+        ctx.stroke();
 
         renderEntities();
     }
@@ -166,6 +174,7 @@ var Engine = (function(global) {
         star.render();
         key.render();
         player.render();
+        player.renderInfo();
     }
 
     /* This function does nothing but it could have been a good place to
