@@ -39,7 +39,6 @@ var Engine = (function(global) {
          * our update function since it may be used for smooth animation.
          * Reset the game if the gameMode is not true, which jumps to the start screen
          */
-        console.log(gameMode);
         if(gameMode === true){
             update(dt);
             render();

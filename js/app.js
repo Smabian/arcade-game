@@ -1,3 +1,5 @@
+'use strict';
+
 var gameMode = false;
 var gameStatus = 'Press Play';
 
@@ -76,12 +78,13 @@ Player.prototype.handleInput = function (direction) {
 //Check all possible collisions and perform actions accordingly
 Player.prototype.checkCollisions = function(){
     //Check collisions with Enemies
-    for(var i=0; i<allEnemies.length; i++){
+    var enemiesLength = allEnemies.length;
+    for(var i=0; i<enemiesLength; i++){
         if(this.x < allEnemies[i].x + 70 && this.x + 55 > allEnemies[i].x &&
             this.y < allEnemies[i].y + 30 && this.y + 80 > allEnemies[i].y){
 
             this.lives--;
-            player.reset(303,392);
+            this.reset(303,392);
 
             //Game Over - Game Lost
             if(this.lives===0){
@@ -97,7 +100,8 @@ Player.prototype.checkCollisions = function(){
         }
     }
     //Check collisions with Gems
-    for(var j = 0; j<allGems.length; j++){
+    var gemsLength = allGems.length;
+    for(var j = 0; j<gemsLength; j++){
         if(this.x < allGems[j].x + 60 && this.x + 55 > allGems[j].x &&
             this.y < allGems[j].y + 30 && this.y + 80 > allGems[j].y){
 
@@ -141,7 +145,7 @@ Player.prototype.checkCollisions = function(){
         star.selected = false;
         key.reset(-100,-100);
         key.selected = false;
-        player.reset(303,392);
+        this.reset(303,392);
     }
 };
 
@@ -226,5 +230,3 @@ document.addEventListener('keyup', function(e) {
     };
     player.handleInput(allowedKeys[e.keyCode]);
 });
-
-
