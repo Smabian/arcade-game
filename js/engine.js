@@ -7,6 +7,11 @@
  * the canvas' context (ctx) object globally available to make writing app.js
  * a little simpler to work with.*/
 
+/* Create two variables, one is used to check the game state (game running/game start screen)
+ * the other is used to display the text on the start screen (Game Over, Game Won, Press Play) */
+var gameMode = false;
+var gameStatus = 'Press Play';
+
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
      * create the canvas element, grab the 2D context for that canvas
@@ -19,8 +24,6 @@ var Engine = (function(global) {
 
     canvas.width = 707;
     canvas.height = 587;
-    canvas.style.width = canvas.width;
-    canvas.style.height = canvas.height;
     doc.body.appendChild(canvas);
 
     /* This function serves as the kickoff point for the game loop itself
@@ -29,17 +32,22 @@ var Engine = (function(global) {
         /* Get our time delta information which is required if your game
          * requires smooth animation. Because everyone's computer processes
          * instructions at different speeds we need a constant value that
-         * would be the same for everyone (regardless of how fast their
-         * computer is) - hurray time!
+         * would be the same for everyone
          */
         var now = Date.now(),
             dt = (now - lastTime) / 1000.0;
 
         /* Call our update/render functions, pass along the time delta to
          * our update function since it may be used for smooth animation.
+         * Reset the game if the gameMode is not true, which jumps to the start screen
          */
-        update(dt);
-        render();
+        console.log(gameMode);
+        if(gameMode === true){
+            update(dt);
+            render();
+        } else {
+            reset();
+        }
 
         /* Set our lastTime variable which is used to determine the time delta
          * for the next time this function is called.
@@ -84,6 +92,8 @@ var Engine = (function(global) {
      * game tick (or loop of the game engine)*/
     function render() {
         //This array holds the relative URL to the image used for each row
+        ctx.fillStyle = '#C8E6C9';
+        ctx.fillRect(0,0,canvas.width,canvas.height);
         var rowImages = [
                 'images/water-block.png',
                 'images/stone-block.png',
@@ -94,7 +104,8 @@ var Engine = (function(global) {
             ],
             numRows = 6,
             numCols = 7,
-            row, col;
+            row,
+            col;
 
         /* Loop through the number of rows and columns we've defined above
          * and, using the rowImages array to draw the correct */
@@ -106,6 +117,7 @@ var Engine = (function(global) {
                  * We're using our Resources helpers to refer to our images
                  * so that we get the benefits of caching these images, since
                  * we're using them over and over.*/
+                 //Once the Star was selected the map should be changed
                  if (row === 0 && col === 5 && star.selected === true){
                     ctx.drawImage(Resources.get('images/stone-block.png'), col * 101, row * 83);
                  } else {
@@ -121,9 +133,9 @@ var Engine = (function(global) {
         ctx.strokeStyle = '#333';
         ctx.fill();
         ctx.stroke();
-        ctx.fillStyle = '#333';
+        ctx.fillStyle = '#111';
         ctx.font = '40px helvetica';
-        ctx.fillText('Frogger', 287, 33);
+        ctx.fillText('Frogger', 287, 35);
 
         renderEntities();
     }
@@ -153,7 +165,32 @@ var Engine = (function(global) {
      * those sorts of things. It's only called once by the init() method.
      */
     function reset() {
-        // noop
+        //Draw Start Screen Rectangle
+        ctx.fillStyle = '#757575';
+        ctx.strokeStyle = '#000';
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        ctx.strokeRect(0,0,canvas.width,canvas.height);
+        //Add Game Title to Screen
+        ctx.fillStyle = '#fff';
+        ctx.font = '40px helvetica';
+        ctx.fillText('Frogger', 287, 35);
+        //Add Button to play new Game
+        ctx.fillStyle = '#EEEEEE';
+        ctx.fillRect(250,500,200,50);
+        ctx.strokeRect(250,500,200,50);
+        ctx.fillStyle = '#000';
+        ctx.font = '25px helvetica';
+        ctx.fillText('Play New Game', 260, 538);
+        //Display Gamestatus (Game Over, Start Game, You Won)
+        ctx.font = '100px helvetica';
+        ctx.fillStyle = '#fff';
+        ctx.textAlign = 'center';
+        ctx.fillText(gameStatus, canvas.width/2, 170);
+        //Add Instructions
+        ctx.drawImage(Resources.get('images/instructions.png'),0,220, 707, 290);
+        ctx.textAlign= 'left';
+        //Add Score & Lives
+        player.displayInfo();
     }
 
     /* Go ahead and load all of the images we know we're going to need to
@@ -172,7 +209,8 @@ var Engine = (function(global) {
         'images/GemGreen.png',
         'images/GemOrange.png',
         'images/Key.png',
-        'images/Heart.png'
+        'images/Heart.png',
+        'images/instructions.png'
     ]);
     Resources.onReady(init);
 
@@ -180,4 +218,17 @@ var Engine = (function(global) {
      * object when run in a browser) so that developers can use it more easily
      * from within their app.js files.*/
     global.ctx = ctx;
+
+    //Event listener to check if the start button is pressed and change gameMode
+    document.addEventListener('click', function(e){
+        console.log(e.offsetX + "/" + e.offsetY);
+        var x = e.offsetX,
+            y = e.offsetY;
+
+        if (x > 250 && x < 450 && y > 510 && y < 550){
+            gameMode = true;
+            player.score = 0;
+            player.lives = 2;
+        }
+    });
 })(this);

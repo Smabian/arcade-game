@@ -1,13 +1,16 @@
+//Superclass Object with functions that all classes/objects require
 var Objects = function(x,y,sprite){
     this.x = x;
     this.y = y;
     this.sprite = sprite;
 };
 
+//Load object and render it at a certain position
 Objects.prototype.render = function(){
     ctx.drawImage(Resources.get(this.sprite),this.x, this.y);
 };
 
+//Reset Object to a certain position
 Objects.prototype.reset = function(x,y){
     this.x = x;
     this.y = y;
@@ -29,10 +32,10 @@ Enemy.prototype.update = function(dt) {
         this.reset(-100,this.y);
     }
 };
-
+// Set new speed on reset
 Enemy.prototype.reset = function(x,y) {
      Objects.prototype.reset.call(this,x,y);
-     this.speed = (Math.random() * 300) + 300;
+     this.speed = (Math.random() * 300) + 300; //Add Random speed to each enemy
 };
 
 // Player Class
@@ -44,6 +47,7 @@ var Player = function(){
 Player.prototype = Object.create(Objects.prototype);
 Player.prototype.constructor = Player;
 
+//Render lives and points on screen
 Player.prototype.displayInfo = function() {
     ctx.font = '25px Helvetica';
     ctx.fillStyle = "#fff";
@@ -51,6 +55,7 @@ Player.prototype.displayInfo = function() {
     ctx.fillText("Lives: " + this.lives, 20,30);
 };
 
+//Move player according to key pressed and make sure player can not go off screen
 Player.prototype.handleInput = function (direction) {
     if (direction ==='left' && this.x > 0){
         this.x -= 101;
@@ -65,7 +70,7 @@ Player.prototype.handleInput = function (direction) {
     }
 };
 
-//TO DO: Improve Collisions
+//Check all possible collisions and perform actions accordingly
 Player.prototype.checkCollisions = function(){
     //Check collisions with Enemies
     for(var i=0; i<allEnemies.length; i++){
@@ -75,9 +80,16 @@ Player.prototype.checkCollisions = function(){
             this.lives--;
             player.reset(303,392);
 
-            //Game Over
+            //Game Over - Game Lost
             if(this.lives===0){
-                ctx.fillText("GAME OVER", 280,30); //END GAME
+                //ctx.fillText("GAME OVER", 280,30); //END GAME
+                gameMode = false;
+                gameStatus = 'GAME OVER';
+                //Reset items
+                star.reset(-100,-100);
+                star.selected = false;
+                key.reset(-100,-100);
+                key.selected = false;
             }
         }
     }
@@ -93,15 +105,16 @@ Player.prototype.checkCollisions = function(){
     //Check collisions with Heart
     if(this.x < heart.x + 60 && this.x + 55 > heart.x &&
             this.y < heart.y + 15 && this.y + 80 > heart.y){
-
+            //increase lives
             this.lives++;
+            //remove heart
             delete heart.x;
             delete heart.y;
     }
     //Check collissions with Selector
     if(this.x < selector.x + 70 && this.x + 55 > selector.x &&
         this.y < selector.y + 30 && this.y + 50 > selector.y){
-
+        //see if star is already selected, if not move it to the new location
         if (star.selected === true){} else {
             star.reset(505,402);
         }
@@ -109,7 +122,7 @@ Player.prototype.checkCollisions = function(){
     //Check collissions with Star
     if(this.x < star.x + 70 && this.x + 55 > star.x &&
         this.y < star.y + 30 && this.y + 80 > star.y){
-
+        //Place star on selector and make key appear
         star.selected = true;
         star.reset(0,70);
         key.reset(518,10);
@@ -118,9 +131,14 @@ Player.prototype.checkCollisions = function(){
     if(this.x < key.x + 70 && this.x + 55 > key.x &&
         this.y < key.y + 30 && this.y + 80 > key.y){
 
-        key.selected = true;
-        this.score = this.score + this.lives * 500;
-        console.log("Game won"); //END GAME
+        gameMode = false; //Stop Game
+        gameStatus = 'YOU WON!'; //Change Displaytext on Game finished screen
+        //Reset items
+        star.reset(-100,-100);
+        star.selected = false;
+        key.reset(-100,-100);
+        key.selected = false;
+        player.reset(303,392);
     }
 };
 
@@ -131,7 +149,7 @@ var Select = function(){
 Select.prototype = Object.create(Objects.prototype);
 Select.prototype.constructor = Select;
 
-//Item Class
+//Item Class used for star and key
 var Item = function(type){
     if (type==='Star'){
         Objects.call(this,-100,-100, 'images/Star.png');
@@ -166,6 +184,7 @@ var Collectible = function(color){
 Collectible.prototype = Object.create(Objects.prototype);
 Collectible.prototype.constructor = Collectible;
 
+//Set random location on reset
 Collectible.prototype.reset = function(){
     //Random position on Grid (Grass)
     var col = Math.round(Math.random() * 6) * 101 + 20;
@@ -202,6 +221,7 @@ document.addEventListener('keyup', function(e) {
         39: 'right',
         40: 'down'
     };
-
     player.handleInput(allowedKeys[e.keyCode]);
 });
+
+
