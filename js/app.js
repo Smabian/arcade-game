@@ -1,3 +1,6 @@
+var gameMode = false;
+var gameStatus = 'Press Play';
+
 //Superclass Object with functions that all classes/objects require
 var Objects = function(x,y,sprite){
     this.x = x;
@@ -50,9 +53,9 @@ Player.prototype.constructor = Player;
 //Render lives and points on screen
 Player.prototype.displayInfo = function() {
     ctx.font = '25px Helvetica';
-    ctx.fillStyle = "#fff";
-    ctx.fillText("Score: " + this.score, 570, 30);
-    ctx.fillText("Lives: " + this.lives, 20,30);
+    ctx.fillStyle = '#fff';
+    ctx.fillText('Score: ' + this.score, 570, 30);
+    ctx.fillText('Lives: ' + this.lives, 20,30);
 };
 
 //Move player according to key pressed and make sure player can not go off screen
@@ -94,12 +97,12 @@ Player.prototype.checkCollisions = function(){
         }
     }
     //Check collisions with Gems
-    for(var i = 0; i<allGems.length; i++){
-        if(this.x < allGems[i].x + 60 && this.x + 55 > allGems[i].x &&
-            this.y < allGems[i].y + 30 && this.y + 80 > allGems[i].y){
+    for(var j = 0; j<allGems.length; j++){
+        if(this.x < allGems[j].x + 60 && this.x + 55 > allGems[j].x &&
+            this.y < allGems[j].y + 30 && this.y + 80 > allGems[j].y){
 
-            this.score += allGems[i].score;
-            allGems[i].reset();
+            this.score += allGems[j].score;
+            allGems[j].reset();
         }
     }
     //Check collisions with Heart
@@ -166,13 +169,13 @@ var Collectible = function(color){
     var score;
     //Creating the right gem
     if (color === 'orange'){
-        Objects.call(this,-100,-100,'images/GemOrange.png')
+        Objects.call(this,-100,-100,'images/GemOrange.png');
         this.score = 50;
     } else if (color === 'green') {
-        Objects.call(this,-100,-100,'images/GemGreen.png')
+        Objects.call(this,-100,-100,'images/GemGreen.png');
         this.score = 100;
     } else if (color === 'blue') {
-        Objects.call(this,-100,-100,'images/GemBlue.png')
+        Objects.call(this,-100,-100,'images/GemBlue.png');
         this.score = 200;
     } else {
         //Heart

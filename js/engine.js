@@ -9,8 +9,6 @@
 
 /* Create two variables, one is used to check the game state (game running/game start screen)
  * the other is used to display the text on the start screen (Game Over, Game Won, Press Play) */
-var gameMode = false;
-var gameStatus = 'Press Play';
 
 var Engine = (function(global) {
     /* Predefine the variables we'll be using within this scope,
@@ -221,7 +219,6 @@ var Engine = (function(global) {
 
     //Event listener to check if the start button is pressed and change gameMode
     document.addEventListener('click', function(e){
-        console.log(e.offsetX + "/" + e.offsetY);
         var x = e.offsetX,
             y = e.offsetY;
 
